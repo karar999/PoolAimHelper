@@ -1,3 +1,4 @@
+
 name: Build PoolAimHelper APK
 
 on:
@@ -36,6 +37,25 @@ jobs:
 
       - name: Extract project
         run: unzip -q PoolAimHelper_CloudBuild_Package.zip -d buildsrc
+
+      - name: Fix Gradle repositories
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("buildsrc/PoolAimHelper/settings.gradle.kts")
+          s = p.read_text()
+          block = """pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+
+          """
+          if "pluginManagement" not in s:
+              p.write_text(block + s)
+          PY
 
       - name: Build APK
         working-directory: buildsrc/PoolAimHelper
