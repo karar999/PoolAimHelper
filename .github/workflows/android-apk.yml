@@ -1,4 +1,3 @@
-
 name: Build PoolAimHelper APK
 
 on:
@@ -21,13 +20,14 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Android SDK
-            - name: Accept Android SDK licenses
-        run: yes | sdkmanager --licenses
-        uses: android-actions/setup-android@v3
+      - name: Accept Android SDK licenses
+        run: |
+          set +o pipefail
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
 
       - name: Install Android SDK packages
-        run: sdkmanager "platforms;android-34" "build-tools;34.0.0"
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -47,4 +47,3 @@ jobs:
           name: PoolAimHelper-APK
           path: buildsrc/PoolAimHelper/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
-          
